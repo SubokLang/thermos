@@ -5,10 +5,20 @@ from flask import url_for
 
 app = Flask(__name__)
 
+class User:
+    def __init__(self, firstname, lastname):
+        self.firstname = firstname
+        self.lastname = lastname
+
+    def initials(self):
+        return "{}. {}.".format(self.firstname[0], self.lastname[0])
+
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
+    titlevar = 'Title from view to template'
+    userobj = User("John", "Doe")
+    return render_template('index.html',title=titlevar,user=userobj)
 
 
 if __name__ == '__main__':
