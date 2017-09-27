@@ -20,6 +20,9 @@ def index():
     userobj = User("John", "Doe")
     return render_template('index.html',title=titlevar,user=userobj)
 
+@app.rout('/add')
+def add():
+    return render_template('add.html')
 
 if __name__ == '__main__':
     #port =  int(os.environ.get('PORT',5000))
