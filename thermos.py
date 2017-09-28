@@ -20,7 +20,7 @@ def index():
     userobj = User("John", "Doe")
     return render_template('index.html',title=titlevar,user=userobj)
 
-@app.rout('/add')
+@app.route('/add')
 def add():
     return render_template('add.html')
 
