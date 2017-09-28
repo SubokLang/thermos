@@ -1,9 +1,20 @@
-from flask import Flask
-from flask import render_template
-from flask import url_for
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for
+
+from logging import DEBUG
 #import os
 
 app = Flask(__name__)
+app.logger.setLevel(DEBUG)
+
+bookmarks = []
+
+def store_bookmark(url):
+    bookmarks.append(dict(
+        url = url,
+        user = "reindert",
+        date = datetime.utcnow()
+    ))
 
 class User:
     def __init__(self, firstname, lastname):
@@ -20,8 +31,13 @@ def index():
     userobj = User("John", "Doe")
     return render_template('index.html',title=titlevar,user=userobj)
 
-@app.route('/add')
+@app.route('/add', methods=['GET', 'POST'])
 def add():
+    if request.method == "POST":
+        url = request.form['url']
+        store_bookmark(url)
+        app.logger.debug('store url: ' + url)
+        return redirect(url_for('index'))
     return render_template('add.html')
 
 @app.errorhandler(404)
