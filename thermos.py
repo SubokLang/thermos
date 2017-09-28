@@ -6,9 +6,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
 # app.logger.setLevel(DEBUG)
+app.config['SECRET_KEY'] = "123456"
 
 bookmarks = []
-app.config['SECRET_KEY'] = "123456"
 
 def store_bookmark(url):
     bookmarks.append(dict(
@@ -16,6 +16,9 @@ def store_bookmark(url):
         user = "reindert",
         date = datetime.utcnow()
     ))
+
+def new_bookmarks(num):
+    return sorted(bookmarks, key=lambda bm: bm['date'], reverse=True)[:num]
 
 class User:
     def __init__(self, firstname, lastname):
@@ -28,9 +31,9 @@ class User:
 @app.route('/')
 @app.route('/index')
 def index():
-    titlevar = 'Title from view to template'
-    userobj = User("John", "Doe")
-    return render_template('index.html',title=titlevar,user=userobj)
+    # titlevar = 'Title from view to template'
+    # userobj = User("John", "Doe")
+    return render_template('index.html', new_bookmarks=new_bookmarks(5))
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
