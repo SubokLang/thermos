@@ -1,6 +1,14 @@
+import os
 from datetime import datetime
-from sqlalchemy import desc
-from thermos import db
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
+# from thermos.thermos import db
+# from thermos.models import User, Bookmark
+
+app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'thermos.db')
+db = SQLAlchemy(app)
 
 class Bookmark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,3 +30,5 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+db.create_all()

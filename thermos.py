@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 # from logging import DEBUG
 
 from forms import BookmarkForm
+import models
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,7 +16,7 @@ app.config['SECRET_KEY'] = "123456"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'thermos.db')
 db = SQLAlchemy(app)
 
-bookmarks = []
+# bookmarks = []
 
 def store_bookmark(url, description):
     bookmarks.append(dict(
@@ -24,9 +25,6 @@ def store_bookmark(url, description):
         description = description,
         date = datetime.utcnow()
     ))
-
-def new_bookmarks(num):
-    return sorted(bookmarks, key=lambda bm: bm['date'], reverse=True)[:num]
 
 class User:
     def __init__(self, firstname, lastname):
@@ -41,7 +39,7 @@ class User:
 def index():
     # titlevar = 'Title from view to template'
     # userobj = User("John", "Doe")
-    return render_template('index.html', new_bookmarks=new_bookmarks(5))
+    return render_template('index.html', new_bookmarks=models.Bookmark.newest(5))
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
@@ -49,7 +47,9 @@ def add():
     if form.validate_on_submit():
         url = form.url.data
         description = form.description.data
-        store_bookmark(url, description)
+        bm = models.Bookmark(url=url, description=description)
+        db.session.add(bm)
+        db.session.commit()
         flash("Stored '{}'".format(description))
         return redirect(url_for('index'))
     return render_template('add.html', form=form)
